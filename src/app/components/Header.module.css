@@ -1,0 +1,67 @@
+/* Header.module.css */
+
+/* 전체 헤더 영역 */
+.header {
+  background-color: #f9b4cc; /* 예: 연한 핑크톤 색상 */
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 내부 컨테이너 */
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 로고 */
+.logo a {
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #fff; /* 하얀색 텍스트 */
+  transition: opacity 0.3s;
+}
+
+.logo a:hover {
+  opacity: 0.8;
+}
+
+/* 네비게이션 영역 */
+.nav {
+  display: flex;
+  align-items: center;
+}
+
+/* 사용자 영역 */
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 버튼, 텍스트 간격 */
+}
+
+/* 인사말(“안녕하세요, ~님”) */
+.welcome {
+  color: #fff;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* 버튼 스타일 */
+.button {
+  background-color: #ffffff;
+  border: 1px solid #f9b4cc;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  color: #f06292; /* 포인트 컬러(어울리는 핑크톤) */
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.button:hover {
+  background-color: #f06292; /* hover 시 메인 컬러 */
+  color: #fff;
+}

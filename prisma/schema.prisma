@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id
+  name String?
+
+  // 관계 설정
+  groups GroupMember[]
+  manitoFor GroupMember[] @relation("Manito")
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  name String @unique
+  password String?
+  isRevealManito Boolean @default(false)
+
+  // 관계 설정
+  members GroupMember[]
+}
+
+model GroupMember {
+  groupId Int
+  userId String
+  role String? // "CAPTAIN", "MEMBER"
+  manitoId String? // 마니또로 지정된 userId
+
+  // 관계 설정
+  group Group @relation(fields: [groupId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  manito User? @relation("Manito", fields: [manitoId], references: [id])
+
+  // 복합 PK 설정 (groupId + userId)
+  @@id([groupId, userId])
+}
