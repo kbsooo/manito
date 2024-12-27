@@ -6,6 +6,7 @@ import './style.css';
 import Header from '../components/Header';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import LoadingScreen from '@/app/components/LoadingScreen';
 
 interface Group {
   id: number;
@@ -38,54 +39,49 @@ export default function Page() {
     fetchGroups();
   }, [session]);
 
+  if (loading) {
+    return <LoadingScreen message="나의 마니또 그룹을 불러오는 중입니다" />;
+  }
+
   return (
     <div className="pageContainer">
       <Header />
       <main className="mainContent">
-        {loading ? (
-          <div className="loadingContainer">
-            <div className="loadingSpinner"></div>
-            <p>로딩중...</p>
-          </div>
-        ) : (
-          <>
-            <div className="groupsSection">
-              <h2 className="sectionTitle">나의 마니또 그룹</h2>
-              {groups.length > 0 ? (
-                <div className="groupsGrid">
-                  {groups.map((group) => (
-                    <Link 
-                      href={`/group/${group.id}`} 
-                      key={group.id} 
-                      className="groupCard"
-                    >
-                      <div className="groupCardContent">
-                        <h3 className="groupName">{group.name}</h3>
-                        <span className={`roleTag ${group.role.toLowerCase()}`}>
-                          {group.role}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="emptyState">
-                  <p>아직 참여중인 그룹이 없어요</p>
-                  <p>새로운 그룹을 만들거나 참여해보세요!</p>
-                </div>
-              )}
+        <div className="groupsSection">
+          <h2 className="sectionTitle">나의 마니또 그룹</h2>
+          {groups.length > 0 ? (
+            <div className="groupsGrid">
+              {groups.map((group) => (
+                <Link 
+                  href={`/group/${group.id}`} 
+                  key={group.id} 
+                  className="groupCard"
+                >
+                  <div className="groupCardContent">
+                    <h3 className="groupName">{group.name}</h3>
+                    <span className={`roleTag ${group.role.toLowerCase()}`}>
+                      {group.role}
+                    </span>
+                  </div>
+                </Link>
+              ))}
             </div>
-  
-            <div className="buttonContainer">
-              <Link href="/create" className="button createButton">
-                새 그룹 만들기
-              </Link>
-              <Link href="/join" className="button joinButton">
-                그룹 참가하기
-              </Link>
+          ) : (
+            <div className="emptyState">
+              <p>아직 참여중인 그룹이 없어요</p>
+              <p>새로운 그룹을 만들거나 참여해보세요!</p>
             </div>
-          </>
-        )}
+          )}
+        </div>
+
+        <div className="buttonContainer">
+          <Link href="/create" className="button createButton">
+            새 그룹 만들기
+          </Link>
+          <Link href="/join" className="button joinButton">
+            그룹 참가하기
+          </Link>
+        </div>
       </main>
     </div>
   );

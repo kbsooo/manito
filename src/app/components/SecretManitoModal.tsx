@@ -29,7 +29,7 @@ export default function SecretManitoModal({ isOpen, onClose, manitoName, type }:
           {type === 'assign' && (
             <>
               <p className="text-gray-600 mb-6 text-center text-lg">
-                당신의 소중한 마니또를<br />확인해보세요!
+                당신의 마니또를<br />확인해보세요!
               </p>
               
               <div 

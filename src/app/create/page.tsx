@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Header from '@/app/components/Header'
+import LoadingScreen from '@/app/components/LoadingScreen'
 import './style.css'
 
 export default function CreateGroupPage() {
@@ -20,7 +21,7 @@ export default function CreateGroupPage() {
 
   // 인증되지 않은 사용자 처리
   if (status === "loading") {
-    return <div className="text-center mt-10">Loading...</div>
+    return <LoadingScreen message="사용자 정보를 확인하는 중입니다" />;
   }
 
   if (status === "unauthenticated") {
@@ -34,7 +35,6 @@ export default function CreateGroupPage() {
     setError('')
 
     try {
-      // 세션에서 사용자 ID 추출 (Kakao의 sub 값을 userId로 사용)
       if (!session?.user) {
         throw new Error('User session not found')
       }
@@ -46,7 +46,6 @@ export default function CreateGroupPage() {
         },
         body: JSON.stringify({
           ...groupData,
-          // Kakao sub를 userId로 사용 (token.sub)
           userId: session.user.id || session.user.email || 'unknown',
         }),
       })
@@ -56,7 +55,6 @@ export default function CreateGroupPage() {
         throw new Error(data.error || 'Failed to create group')
       }
 
-      // 성공 시 그룹 목록 페이지로 이동
       router.push('/main')
       router.refresh()
 
@@ -73,6 +71,11 @@ export default function CreateGroupPage() {
       ...prev,
       [name]: value
     }))
+  }
+
+  // 폼 제출 중일 때도 로딩 화면 표시
+  if (loading) {
+    return <LoadingScreen message="새로운 그룹을 만드는 중입니다" />;
   }
 
   return (
@@ -127,10 +130,10 @@ export default function CreateGroupPage() {
 
             <button
               type="submit"
-              disabled={loading || !groupData.name}
-              className={`submitButton ${loading || !groupData.name ? 'disabled' : ''}`}
+              disabled={!groupData.name}
+              className={`submitButton ${!groupData.name ? 'disabled' : ''}`}
             >
-              {loading ? '생성 중...' : '그룹 만들기'}
+              그룹 만들기
             </button>
           </form>
         </div>

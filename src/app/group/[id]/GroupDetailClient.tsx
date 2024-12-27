@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
 import SecretManitoModal from '@/app/components/SecretManitoModal';
+import LoadingScreen from '@/app/components/LoadingScreen';
 
 type Props = {
   params: { id: string };
@@ -38,7 +39,6 @@ interface GroupData {
 // }
 
 export default function GroupDetailPage({params}: Props) {
-  // const { params } = props;
   const router = useRouter();
   const { data: session } = useSession();
   const [groupData, setGroupData] = useState<GroupData | null>(null);
@@ -48,12 +48,38 @@ export default function GroupDetailPage({params}: Props) {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'reveal' | 'assign'>('assign');
 
+  const checkAndShowManitoModal = useCallback((groupData: GroupData) => {
+    if (!session?.user?.id) return;
+    
+    const currentMember = groupData.members.find(
+      member => member.userId === session.user.id
+    );
+    
+    if (!currentMember?.manitoId) return;
+
+    const storageKey = `manito-checked-${groupData.id}-${session.user.id}`;
+    const hasCheckedManito = localStorage.getItem(storageKey);
+
+    if (!hasCheckedManito && !groupData.isRevealManito) {
+      setModalType('assign');
+      setShowModal(true);
+    }
+  }, [session?.user?.id]);
+
+  const handleModalClose = useCallback(() => {
+    if (!session?.user?.id || !groupData) return;
+    
+    // 모달을 닫을 때 로컬 스토리지에 확인 여부 저장
+    const storageKey = `manito-checked-${groupData.id}-${session.user.id}`;
+    localStorage.setItem(storageKey, 'true');
+    setShowModal(false);
+  }, [session?.user?.id, groupData]);
+
   const fetchGroupData = useCallback(async () => {
     if (!session?.user?.id) return;
 
     try {
-      const { id } = params; // Directly access id
-      const response = await fetch(`/api/group/${id}`);
+      const response = await fetch(`/api/group/${params.id}`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -61,8 +87,9 @@ export default function GroupDetailPage({params}: Props) {
       }
 
       if (data.success) {
-        console.log('Fetched group data:', data.group);
         setGroupData(data.group);
+        // 데이터를 가져온 후 마니또 모달 표시 여부 확인
+        checkAndShowManitoModal(data.group);
       }
     } catch (error) {
       console.error('Fetch error:', error);
@@ -70,7 +97,7 @@ export default function GroupDetailPage({params}: Props) {
     } finally {
       setLoading(false);
     }
-  }, [params, session?.user?.id]);
+  }, [params.id, session?.user?.id, checkAndShowManitoModal]);
 
   useEffect(() => {
     fetchGroupData();
@@ -152,8 +179,7 @@ export default function GroupDetailPage({params}: Props) {
 
     setIsProcessing(true);
     try {
-      const { id } = params;
-      const response = await fetch(`/api/group/${id}/manito`, {
+      const response = await fetch(`/api/group/${params.id}/manito`, {
         method: 'POST',
       });
       const data = await response.json();
@@ -175,9 +201,15 @@ export default function GroupDetailPage({params}: Props) {
     }
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
-  if (!groupData) return <div className="p-4">Group not found</div>;
+  if (loading) {
+    return <LoadingScreen message="그룹 정보를 불러오는 중입니다" />;
+  }
+  if (error) {
+    return <LoadingScreen message={`오류가 발생했습니다: ${error}`} />;
+  }
+  if (!groupData) {
+    return <LoadingScreen message="그룹을 찾을 수 없습니다" />;
+  }
 
   const currentMember = groupData.members.find(
     member => member.userId === session?.user?.id
@@ -191,10 +223,31 @@ export default function GroupDetailPage({params}: Props) {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">{groupData.name}</h1>
+      <main className="container mx-auto px-4 py-8 text-black">
+      <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-[#ff6b6b] to-[#ff8e8e] text-transparent bg-clip-text mb-2">
+            {groupData.name}
+          </h1>
+          <div className="flex items-center gap-2 text-gray-600">
+            <span className="inline-flex items-center">
+              👥 현재 인원 {groupData.members.length}명
+            </span>
+            {!groupData.isRevealManito && hasAnyManito && (
+              <span className="inline-flex items-center text-blue-600">
+                • 마니또 진행중
+              </span>
+            )}
+            {groupData.isRevealManito && (
+              <span className="inline-flex items-center text-green-600">
+                • 마니또 공개됨
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
 
-        {isCaptain && (
+      {isCaptain && (
           <div className="mb-6 space-x-4">
             {!groupData.isRevealManito && groupData.members.length > 1 && !hasAnyManito && (
               <button
@@ -226,8 +279,8 @@ export default function GroupDetailPage({params}: Props) {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">참가자 목록</h2>
+        <div className="bg-white rounded-lg shadow p-6 text-black">
+          <h2 className="text-xl font-semibold mb-4 text-black">참가자 목록</h2>
           <div className="space-y-3">
             {groupData.members.map((member) => (
               <div
@@ -235,13 +288,13 @@ export default function GroupDetailPage({params}: Props) {
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{member.name}</span>
+                  <span className="font-medium text-black">{member.name}</span>
                   {currentMember?.userId === member.userId &&
-                    member.manitoId &&
-                    !groupData.isRevealManito && (
-                      <span className="text-sm text-blue-600 animate-pulse">
-                        🎭 마니또 배정됨
-                      </span>
+                      member.manitoId &&
+                      !groupData.isRevealManito && (
+                        <span className="ml-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium">
+                          🎭 마니또: {groupData.members.find(m => m.userId === member.manitoId)?.name}
+                        </span>
                     )}
                   {groupData.isRevealManito && member.manitoId && (
                     <span className="text-sm text-gray-500">
@@ -264,11 +317,11 @@ export default function GroupDetailPage({params}: Props) {
         </div>
 
         <SecretManitoModal 
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          manitoName={myManito || ''}
-          type={modalType}
-        />
+        isOpen={showModal}
+        onClose={handleModalClose}
+        manitoName={myManito || ''}
+        type={modalType}
+      />
       </main>
     </div>
   );

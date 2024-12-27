@@ -1,0 +1,180 @@
+/* LoadingScreen.module.css */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.giftBox {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.box {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.ribbon {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #ffd6d6;
+  border-radius: 50%;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.2);
+}
+
+.ribbonTail {
+  position: absolute;
+  width: 16px;
+  height: 20px;
+  background: #ffd6d6;
+  bottom: -8px;
+  animation: swing 3s ease-in-out infinite;
+}
+
+.ribbonTail.left {
+  left: -8px;
+  transform-origin: top right;
+  border-radius: 8px 0 0 8px;
+}
+
+.ribbonTail.right {
+  right: -8px;
+  transform-origin: top left;
+  border-radius: 0 8px 8px 0;
+}
+
+@keyframes swing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+}
+
+.message {
+  text-align: center;
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+}
+
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #ff6b6b;
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+.dot:nth-child(1) {
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation: dotPulse 1.5s ease-in-out infinite 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation: dotPulse 1.5s ease-in-out infinite 0.4s;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .giftBox {
+    width: 60px;
+    height: 60px;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+}
