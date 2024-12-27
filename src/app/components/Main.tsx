@@ -1,10 +1,23 @@
-// app/components/Main.tsx
 "use client";
 
 import styles from "./Main.module.css";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect} from "react";
 import { useRouter } from "next/navigation";
+
+const SnowEffect = () => {
+  return (
+    <div className={styles.snowContainer}>
+      {[...Array(50)].map((_, i) => (
+        <div key={i} className={styles.snowflake} style={{
+          // '--delay': `${Math.random() * 5}s`,
+          // '--duration': `${8 + Math.random() * 4}s`,
+          // '--left': `${Math.random() * 100}%`,
+        }} />
+      ))}
+    </div>
+  );
+};
 
 export default function Main() {
   const { data: session, status } = useSession();
@@ -18,45 +31,36 @@ export default function Main() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <div className={styles.logo}>
+      <SnowEffect />
+      <div className={styles.content}>
+        <div className={styles.logoArea}>
+          <div className={styles.giftBox}>
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.giftIcon}>
+              {/* 리본 상단 */}
+              <path d="M60 25C60 25 45 10 30 10C15 10 10 20 10 25C10 30 15 35 30 35H60" fill="#D04848"/>
+              <path d="M60 25C60 25 75 10 90 10C105 10 110 20 110 25C110 30 105 35 90 35H60" fill="#B31312"/>
+              {/* 선물상자 */}
+              <rect x="15" y="35" width="90" height="75" rx="4" fill="#EE2B2B"/>
+              {/* 수직 리본 */}
+              <rect x="50" y="35" width="20" height="75" fill="#D04848"/>
+              {/* 리본 중앙 */}
+              <rect x="50" y="25" width="20" height="10" fill="#B31312"/>
+              {/* 장식 무늬 */}
+              <circle cx="35" cy="60" r="5" fill="#F3C1C1"/>
+              <circle cx="85" cy="60" r="5" fill="#F3C1C1"/>
+              <circle cx="35" cy="90" r="5" fill="#F3C1C1"/>
+              <circle cx="85" cy="90" r="5" fill="#F3C1C1"/>
+            </svg>
+          </div>
           <span className={styles.logoText}>마니또</span>
-          <div className={styles.gradientBar}></div>
         </div>
         
-        <div className={styles.content}>
-          {session && session.user ? (
-            <div className={styles.userSection}>
-              <h3 className={styles.welcome}>
-                반가워요, <strong>{session.user.name}</strong>님!
-              </h3>
-              <p className={styles.message}>
-                설레는 마니또의 세계로 들어가볼까요?
-              </p>
-              <button 
-                className={`${styles.button} ${styles.logout}`}
-                onClick={() => signOut()}
-              >
-                로그아웃
-              </button>
-            </div>
-          ) : (
-            <div className={styles.loginSection}>
-              <h3 className={styles.welcome}>
-                마니또에 오신 것을 환영합니다
-              </h3>
-              <p className={styles.message}>
-                로그인하고 즐거운 마니또를 시작해보세요
-              </p>
-              <button 
-                className={`${styles.button} ${styles.login}`}
-                onClick={() => signIn()}
-              >
-                로그인하기
-              </button>
-            </div>
-          )}
-        </div>
+        <button 
+          className={`${styles.button} ${session ? styles.logout : styles.login}`}
+          onClick={() => session ? signOut() : signIn()}
+        >
+          {session ? "로그아웃" : "시작하기"}
+        </button>
       </div>
     </div>
   );

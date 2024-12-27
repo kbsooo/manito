@@ -1,90 +1,85 @@
 /* app/components/Main.module.css */
 .container {
   display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 1.5rem;
-}
-
-.card {
-  background: white;
-  border-radius: 1.5rem;
-  padding: 2.5rem;
-  width: 100%;
-  max-width: 440px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.logo {
-  text-align: center;
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-.logoText {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  -webkit-background-clip: text;
-  color: transparent;
-  display: inline-block;
-  margin-bottom: 0.5rem;
-}
-
-.gradientBar {
-  height: 3px;
-  background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-  width: 60px;
-  margin: 0 auto;
-  border-radius: 2px;
-}
-
-.content {
-  text-align: center;
-}
-
-.welcome {
-  color: #1e293b;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.message {
-  color: #64748b;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  line-height: 1.5;
-}
-
-.button {
-  width: 100%;
-  padding: 0.875rem 1.5rem;
-  border-radius: 0.75rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
   position: relative;
   overflow: hidden;
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.logoArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.giftBox {
+  width: 140px;
+  height: 140px;
+  margin-bottom: 2rem;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 10px 15px rgba(179, 19, 18, 0.2));
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.giftIcon {
+  width: 100%;
+  height: 100%;
+}
+
+.logoText {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg,#ff6b6b, #ff8e8e);
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(179, 19, 18, 0.1);
+}
+
+.button {
+  min-width: 200px;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
 .login {
-  background-color: #ff6b6b;
+  background: linear-gradient(135deg,#ff6b6b, #ff8e8e);
   color: white;
 }
 
 .login:hover {
-  background-color: #ff8e8e;
   transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(179, 19, 18, 0.2);
 }
 
 .logout {
@@ -97,30 +92,79 @@
   transform: translateY(-2px);
 }
 
+/* 눈 내리는 효과 */
+.snowContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.snowflake {
+  position: absolute;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  background: white;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 10px white);
+  animation: snowfall var(--duration) linear infinite;
+  animation-delay: var(--delay);
+  left: var(--left);
+  opacity: 0.8;
+}
+
+.snowflake::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
 /* 모바일 반응형 스타일 */
 @media (max-width: 480px) {
   .container {
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
-  .card {
-    padding: 2rem 1.5rem;
+  .giftBox {
+    width: 120px;
+    height: 120px;
   }
 
   .logoText {
     font-size: 2rem;
   }
 
-  .welcome {
-    font-size: 1.25rem;
-  }
-
-  .message {
-    font-size: 1rem;
-  }
-
   .button {
-    padding: 0.75rem 1.25rem;
+    width: 100%;
+    min-width: unset;
+    padding: 0.875rem 1.5rem;
     font-size: 1rem;
   }
 }
