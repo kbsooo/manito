@@ -43,27 +43,45 @@ export default function Page() {
       <Header />
       <main className="mainContent">
         {loading ? (
-          <div className="loading">Loading...</div>
+          <div className="loadingContainer">
+            <div className="loadingSpinner"></div>
+            <p>로딩중...</p>
+          </div>
         ) : (
           <>
-            <div className="groupsGrid">
-              {groups.map((group) => (
-                <Link 
-                  href={`/group/${group.id}`} 
-                  key={group.id} 
-                  className="groupCard"
-                >
-                  <h3>{group.name}</h3>
-                  <span className="roleTag">{group.role}</span>
-                </Link>
-              ))}
+            <div className="groupsSection">
+              <h2 className="sectionTitle">나의 마니또 그룹</h2>
+              {groups.length > 0 ? (
+                <div className="groupsGrid">
+                  {groups.map((group) => (
+                    <Link 
+                      href={`/group/${group.id}`} 
+                      key={group.id} 
+                      className="groupCard"
+                    >
+                      <div className="groupCardContent">
+                        <h3 className="groupName">{group.name}</h3>
+                        <span className={`roleTag ${group.role.toLowerCase()}`}>
+                          {group.role}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="emptyState">
+                  <p>아직 참여중인 그룹이 없어요</p>
+                  <p>새로운 그룹을 만들거나 참여해보세요!</p>
+                </div>
+              )}
             </div>
-            <div className="buttonGroup">
+  
+            <div className="buttonContainer">
               <Link href="/create" className="button createButton">
-                방 만들기
+                새 그룹 만들기
               </Link>
               <Link href="/join" className="button joinButton">
-                참가하기
+                그룹 참가하기
               </Link>
             </div>
           </>

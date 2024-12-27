@@ -1,3 +1,4 @@
+// app/main/layout.tsx
 export default function Layout({
     children,
   }: {

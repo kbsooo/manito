@@ -1,75 +1,9 @@
-// import  {NextResponse} from 'next/server'
-// import prisma from "@/app/lib/prisma";
 
-// interface RequestBody {
-//   name: string;
-//   password?: string;
-//   userId: string;
-// }
-
-// export async function POST(request: Request) {
-//   try {
-//     const body: RequestBody = await request.json();
-
-//     if (!body.name) {
-//       return NextResponse.json(
-//         { error: 'name is missing' },
-//         { status: 400 }
-//       )
-//     } else if (!body.password) {
-//       return NextResponse.json(
-//         { error: 'password is missing' },
-//         { status: 400 }
-//       )
-//     } else if (!body.userId) {
-//       return NextResponse.json(
-//         { error: 'userId is missing' },
-//         { status: 400 }
-//       )
-//     }
-
-//     const result = await prisma.$transaction(async (tx) => {
-//       const group = await tx.group.create({
-//         data: {
-//           name: body.name,
-//           password: body.password,
-//         },
-//       })
-
-//       const groupMember = await tx.groupMember.create({
-//         data: {
-//           groupId: group.id,
-//           userId: body.userId,
-//           role: 'CAPTAIN',
-//         },
-//         include: {
-//           group: true,
-//           user: true,
-//         },
-//       })
-//       return groupMember
-//     })
-//     return NextResponse.json(result)
-//   } catch (error: any) {
-//     if (error.code === 'P2002') {
-//       return NextResponse.json(
-//         { error: 'name already exists' },
-//         { status: 400 }
-//       )
-//     }
-
-//     console.error('error creating gruop', error)
-//     return NextResponse.json(
-//       { error: 'iinternal server error' },
-//       { status: 500}
-//     )
-//   }
-// }
 // app/api/create/route.ts
 
 import { NextResponse } from 'next/server'
 import prisma from '@/app/lib/prisma'
-import { Prisma, PrismaClient } from '@prisma/client'
+// import { Prisma, PrismaClient } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 interface RequestBody {

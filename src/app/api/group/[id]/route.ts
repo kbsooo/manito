@@ -63,3 +63,65 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const groupId = parseInt(id);
+    
+    if (isNaN(groupId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid group ID' },
+        { status: 400 }
+      );
+    }
+
+    // 그룹 정보 확인
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+      include: {
+        members: {
+          where: {
+            role: 'CAPTAIN'
+          }
+        }
+      }
+    });
+
+    if (!group) {
+      return NextResponse.json(
+        { success: false, error: 'Group not found' },
+        { status: 404 }
+      );
+    }
+
+    // 마니또가 공개되었는지 확인
+    if (!group.isRevealManito) {
+      return NextResponse.json(
+        { success: false, error: 'Cannot delete group before revealing manito' },
+        { status: 400 }
+      );
+    }
+
+    // 트랜잭션으로 그룹 멤버와 그룹을 함께 삭제
+    await prisma.$transaction([
+      prisma.groupMember.deleteMany({
+        where: { groupId }
+      }),
+      prisma.group.delete({
+        where: { id: groupId }
+      })
+    ]);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete group:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete group' },
+      { status: 500 }
+    );
+  }
+}

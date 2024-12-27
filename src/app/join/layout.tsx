@@ -1,4 +1,3 @@
-// src/app/join/layout.tsx
 export default function Layout({
   children,
 }: {

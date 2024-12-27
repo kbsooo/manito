@@ -1,8 +1,11 @@
+// app/create/page.tsx
 'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import Header from '@/app/components/Header'
+import './style.css'
 
 export default function CreateGroupPage() {
   const router = useRouter()
@@ -73,64 +76,65 @@ export default function CreateGroupPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-center">Create New Group</h1>
-
-      {/* 현재 로그인한 사용자 정보 표시 */}
-      <div className="mb-6 text-center">
-        <p className="text-sm text-gray-600">
-          Logged in as: {session?.user?.name || 'Unknown User'}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Group Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={groupData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Password (Optional)
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={groupData.password}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
-        {error && (
-          <div className="text-red-500 text-sm mt-2">
-            {error}
+    <div className="pageContainer">
+      <Header />
+      <main className="mainContent">
+        <div className="formCard">
+          <h1 className="formTitle">새 그룹 만들기</h1>
+          
+          <div className="userInfo">
+            <span className="userName">{session?.user?.name || 'Unknown User'}</span>
+            <span className="userSubtext">님의 새로운 마니또 그룹</span>
           </div>
-        )}
 
-        <button
-          type="submit"
-          disabled={loading || !groupData.name}
-          className={`w-full py-2 px-4 rounded-md text-white font-medium
-            ${loading || !groupData.name 
-              ? 'bg-blue-300 cursor-not-allowed'
-              : 'bg-blue-500 hover:bg-blue-600'
-            }`}
-        >
-          {loading ? 'Creating...' : 'Create Group'}
-        </button>
-      </form>
+          <form onSubmit={handleSubmit} className="form">
+            <div className="inputGroup">
+              <label htmlFor="name" className="inputLabel">
+                그룹 이름
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={groupData.name}
+                onChange={handleChange}
+                required
+                className="input"
+                placeholder="그룹 이름을 입력해주세요"
+              />
+            </div>
+
+            <div className="inputGroup">
+              <label htmlFor="password" className="inputLabel">
+                비밀번호
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={groupData.password}
+                onChange={handleChange}
+                className="input"
+                placeholder="비밀번호를 설정하세요"
+              />
+            </div>
+
+            {error && (
+              <div className="errorMessage">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading || !groupData.name}
+              className={`submitButton ${loading || !groupData.name ? 'disabled' : ''}`}
+            >
+              {loading ? '생성 중...' : '그룹 만들기'}
+            </button>
+          </form>
+        </div>
+      </main>
     </div>
   )
 }

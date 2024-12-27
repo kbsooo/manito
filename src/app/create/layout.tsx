@@ -5,9 +5,6 @@ export default function Layout({
 }) {
   return (
     <>
-      <header>
-        <h1>그룹 생성</h1>
-      </header>
       {children}
     </>
   );

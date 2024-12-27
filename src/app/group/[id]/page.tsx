@@ -1,8 +1,10 @@
 //app/group/[id]/page.tsx
 "use client";
 
-import React, { useEffect, useState } from 'react';
+// import React, { useCallback, useEffect, useState } from 'react';
+import React, {useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
 
 interface Member {
@@ -20,36 +22,64 @@ interface GroupData {
 }
 
 export default function GroupDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const { data: session } = useSession();
   const [groupData, setGroupData] = useState<GroupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const fetchGroupData = async () => {
-    if (!session?.user?.id) return;
+  // const fetchGroupData = async () => {
+  //   if (!session?.user?.id) return;
 
-    try {
-      const response = await fetch(`/api/group/${params.id}`);
-      const data = await response.json();
+  //   try {
+  //     const response = await fetch(`/api/group/${params.id}`);
+  //     const data = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch group data');
-      }
+  //     if (!response.ok) {
+  //       throw new Error(data.error || 'Failed to fetch group data');
+  //     }
       
-      if (data.success) {
-        console.log('Fetched group data:', data.group); // 데이터 확인
-        setGroupData(data.group);
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      setError(error instanceof Error ? error.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (data.success) {
+  //       console.log('Fetched group data:', data.group);
+  //       setGroupData(data.group);
+  //     }
+  //   } catch (error) {
+  //     console.error('Fetch error:', error);
+  //     setError(error instanceof Error ? error.message : 'An error occurred');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchGroupData();
+  // }, [params.id, session]);
 
   useEffect(() => {
+    const fetchGroupData = async () => {
+      if (!session?.user?.id) return;
+  
+      try {
+        const response = await fetch(`/api/group/${params.id}`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch group data');
+        }
+        
+        if (data.success) {
+          console.log('Fetched group data:', data.group);
+          setGroupData(data.group);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setError(error instanceof Error ? error.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
     fetchGroupData();
   }, [params.id, session]);
 
@@ -106,6 +136,31 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
     }
   };
 
+  const handleDeleteGroup = async () => {
+    if (!groupData || isProcessing || !confirm('정말로 그룹을 삭제하시겠습니까?')) return;
+    
+    setIsProcessing(true);
+    try {
+      const response = await fetch(`/api/group/${params.id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete group');
+      }
+      
+      if (data.success) {
+        router.push('/main'); // 그룹 목록 페이지로 이동
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to delete group');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   if (loading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
   if (!groupData) return <div className="p-4">Group not found</div>;
@@ -123,10 +178,9 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
         <h1 className="text-3xl font-bold mb-8">{groupData.name}</h1>
         
         {/* 캡틴 전용 버튼 */}
-        {isCaptain && !groupData.isRevealManito && (
-          <div className="mb-6">
-            {!hasAnyManito ? (
-              // 마니또가 아직 없는 경우
+        {isCaptain && (
+          <div className="mb-6 space-x-4">
+            {!groupData.isRevealManito && !hasAnyManito && (
               <button
                 onClick={handleAssignManito}
                 disabled={isProcessing}
@@ -134,14 +188,23 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
               >
                 {isProcessing ? '처리 중...' : '마니또 뽑기'}
               </button>
-            ) : (
-              // 마니또는 있지만 아직 공개되지 않은 경우
+            )}
+            {!groupData.isRevealManito && hasAnyManito && (
               <button
                 onClick={handleRevealManito}
                 disabled={isProcessing}
                 className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400"
               >
                 {isProcessing ? '처리 중...' : '마니또 공개'}
+              </button>
+            )}
+            {groupData.isRevealManito && (
+              <button
+                onClick={handleDeleteGroup}
+                disabled={isProcessing}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:bg-gray-400"
+              >
+                {isProcessing ? '처리 중...' : '그룹 삭제'}
               </button>
             )}
           </div>

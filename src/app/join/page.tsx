@@ -109,6 +109,7 @@ export default function JoinGroupPage() {
         }
       } catch (error) {
         setError('그룹 목록을 불러오는데 실패했습니다.');
+        console.error('Failed to fetch groups:', error);
       } finally {
         setLoading(false);
       }
