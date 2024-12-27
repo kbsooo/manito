@@ -1,8 +1,7 @@
 //app/group/[id]/page.tsx
 "use client";
 
-// import React, { useCallback, useEffect, useState } from 'react';
-import React, {useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
@@ -21,7 +20,13 @@ interface GroupData {
   isRevealManito: boolean;
 }
 
-export default function GroupDetailPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function GroupDetailPage({ params }: PageProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [groupData, setGroupData] = useState<GroupData | null>(null);
@@ -29,59 +34,32 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // const fetchGroupData = async () => {
-  //   if (!session?.user?.id) return;
+  const fetchGroupData = useCallback(async () => {
+    if (!session?.user?.id) return;
 
-  //   try {
-  //     const response = await fetch(`/api/group/${params.id}`);
-  //     const data = await response.json();
+    try {
+      const response = await fetch(`/api/group/${params.id}`);
+      const data = await response.json();
       
-  //     if (!response.ok) {
-  //       throw new Error(data.error || 'Failed to fetch group data');
-  //     }
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch group data');
+      }
       
-  //     if (data.success) {
-  //       console.log('Fetched group data:', data.group);
-  //       setGroupData(data.group);
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch error:', error);
-  //     setError(error instanceof Error ? error.message : 'An error occurred');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchGroupData();
-  // }, [params.id, session]);
+      if (data.success) {
+        console.log('Fetched group data:', data.group);
+        setGroupData(data.group);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setError(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  }, [params.id, session?.user?.id]);
 
   useEffect(() => {
-    const fetchGroupData = async () => {
-      if (!session?.user?.id) return;
-  
-      try {
-        const response = await fetch(`/api/group/${params.id}`);
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch group data');
-        }
-        
-        if (data.success) {
-          console.log('Fetched group data:', data.group);
-          setGroupData(data.group);
-        }
-      } catch (error) {
-        console.error('Fetch error:', error);
-        setError(error instanceof Error ? error.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
     fetchGroupData();
-  }, [params.id, session]);
+  }, [fetchGroupData]);
 
   const handleAssignManito = async () => {
     if (!groupData || isProcessing) return;
@@ -151,7 +129,7 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
       }
       
       if (data.success) {
-        router.push('/main'); // 그룹 목록 페이지로 이동
+        router.push('/main');
       }
     } catch (error) {
       console.error('Delete error:', error);
@@ -177,7 +155,6 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">{groupData.name}</h1>
         
-        {/* 캡틴 전용 버튼 */}
         {isCaptain && (
           <div className="mb-6 space-x-4">
             {!groupData.isRevealManito && !hasAnyManito && (
@@ -210,7 +187,6 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
           </div>
         )}
         
-        {/* 참가자 목록 */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold mb-4">참가자 목록</h2>
           <div className="space-y-3">
@@ -221,7 +197,6 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
               >
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{member.name}</span>
-                  {/* 내가 볼 수 있는 마니또 정보 */}
                   {currentMember?.userId === member.userId && 
                    member.manitoId && 
                    !groupData.isRevealManito && (
@@ -229,7 +204,6 @@ export default function GroupDetailPage({ params }: { params: { id: string } }) 
                       마니또: {groupData.members.find(m => m.userId === member.manitoId)?.name}
                     </span>
                   )}
-                  {/* 공개된 마니또 정보 */}
                   {groupData.isRevealManito && member.manitoId && (
                     <span className="text-sm text-gray-500">
                       → {groupData.members.find(m => m.userId === member.manitoId)?.name}
