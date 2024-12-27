@@ -1,4 +1,3 @@
-// components/LoadingScreen.tsx
 import React from 'react';
 import styles from './LoadingScreen.module.css';
 import Header from '@/app/components/Header';
@@ -10,7 +9,9 @@ interface LoadingScreenProps {
 export default function LoadingScreen({ message = '잠시만 기다려주세요' }: LoadingScreenProps) {
   return (
     <div className={styles.container}>
-      <Header />
+      <div className={styles.headerWrapper}>
+        <Header />
+      </div>
       <div className={styles.content}>
         <div className={styles.giftBox}>
           <div className={styles.box}>
@@ -22,7 +23,7 @@ export default function LoadingScreen({ message = '잠시만 기다려주세요'
         </div>
 
         <div className={styles.message}>
-          <h2 className={styles.title}>Secret Santa</h2>
+          <h2 className={styles.title}>로딩중 ~</h2>
           <p className={styles.subtitle}>{message}</p>
           <div className={styles.dots}>
             <div className={styles.dot}></div>

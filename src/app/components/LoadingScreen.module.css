@@ -3,17 +3,26 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  padding: 2rem;
+  position: relative;
+}
+
+.headerWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
 }
 
 .content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2rem;
+  padding: 2rem;
+  margin-top: -4rem; /* Adjust this value to prevent overlap with header */
 }
 
 .giftBox {
@@ -117,20 +126,11 @@
   font-size: 1rem;
 }
 
-@keyframes fadeInOut {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 .dots {
   display: flex;
   gap: 8px;
   margin-top: 1rem;
+  justify-content: center;
 }
 
 .dot {
@@ -163,8 +163,23 @@
   }
 }
 
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+  .content {
+    margin-top: -2rem;
+    padding: 1rem;
+  }
+  
   .giftBox {
     width: 60px;
     height: 60px;
