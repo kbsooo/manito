@@ -20,13 +20,15 @@ interface GroupData {
   isRevealManito: boolean;
 }
 
-interface PageProps {
+type PageProps = {
   params: {
     id: string;
   };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default function GroupDetailPage({ params }: PageProps) {
+export default function GroupDetailPage(props: PageProps) {
+  const { params } = props;
   const router = useRouter();
   const { data: session } = useSession();
   const [groupData, setGroupData] = useState<GroupData | null>(null);
