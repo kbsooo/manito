@@ -1,15 +1,36 @@
 /* app/main/style.css */
 .pageContainer {
-  min-height: 100vh;
+  min-height: 100vh; /* fallback */
+  min-height: 100dvh; /* 모바일 브라우저를 위한 동적 viewport 높이 */
   background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .mainContent {
+  flex: 1 0 auto; /* flex-shrink를 0으로 설정하여 축소되지 않도록 */
   padding: 20px;
   max-width: 480px;
   margin: 0 auto;
+  width: 100%;
+  padding-bottom: 40px; /* Footer와의 간격 확보 */
 }
 
+/* 모바일 대응을 위한 미디어 쿼리 추가 */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 16px;
+    padding-bottom: 32px;
+  }
+
+  .buttonContainer {
+    padding: 0;
+    margin-bottom: 16px;
+  }
+}
+
+/* 나머지 기존 스타일은 유지 */
 .sectionTitle {
   font-size: 24px;
   font-weight: 700;
@@ -64,8 +85,8 @@
 }
 
 .roleTag.captain {
-  background-color: #FFE4E4;
-  color: #FF6B6B;
+  background-color: #ffe4e4;
+  color: #ff6b6b;
 }
 
 .emptyState {
@@ -97,12 +118,12 @@
 }
 
 .createButton {
-  background-color: #FF6B6B;
+  background-color: #ff6b6b;
   color: white;
 }
 
 .createButton:active {
-  background-color: #FF8E8E;
+  background-color: #ff8e8e;
 }
 
 .joinButton {
@@ -112,31 +133,6 @@
 
 .joinButton:active {
   background-color: #e2e8f0;
-}
-
-.loadingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  gap: 16px;
-  color: #64748b;
-}
-
-.loadingSpinner {
-  width: 32px;
-  height: 32px;
-  border: 2px solid #e2e8f0;
-  border-top-color: #FF6B6B;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (min-width: 768px) {

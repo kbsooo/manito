@@ -1,8 +1,14 @@
 /* app/components/Main.module.css */
-.container {
-  display: flex;
+.pageWrapper {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
+}
+
+.container {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;

@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
+import Footer from '@/app/components/Footer';
 import SecretManitoModal from '@/app/components/SecretManitoModal';
 import LoadingScreen from '@/app/components/LoadingScreen';
 
@@ -221,9 +222,9 @@ export default function GroupDetailPage({params}: Props) {
     : null;
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-8 text-black">
+      <main className="flex-1 container mx-auto px-4 py-8 text-black">
       <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
         <div className="flex flex-col items-center text-center">
           <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-[#ff6b6b] to-[#ff8e8e] text-transparent bg-clip-text mb-2">
@@ -323,6 +324,7 @@ export default function GroupDetailPage({params}: Props) {
         type={modalType}
       />
       </main>
+      <Footer />
     </div>
   );
 }

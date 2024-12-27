@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Header from '@/app/components/Header';
+import Footer from '@/app/components/Footer';
 import styles from './Join.module.css';
 import LoadingScreen from '../components/LoadingScreen';
 
@@ -187,6 +188,7 @@ export default function JoinGroupPage() {
           />
         )}
       </main>
+      <Footer />
     </div>
   );
 }

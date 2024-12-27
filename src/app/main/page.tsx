@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import './style.css';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import LoadingScreen from '@/app/components/LoadingScreen';
@@ -82,7 +83,8 @@ export default function Page() {
             그룹 참가하기
           </Link>
         </div>
-      </main>
+      </main>  
+      <Footer />
     </div>
   );
 }

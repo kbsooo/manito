@@ -4,6 +4,7 @@ import styles from "./Main.module.css";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect} from "react";
 import { useRouter } from "next/navigation";
+import Footer from "@/app/components/Footer";
 
 const SnowEffect = () => {
   return (
@@ -29,13 +30,17 @@ export default function Main() {
     }
   }, [status, router]);
 
-  return (
+
+
+return (
+  <div className={styles.pageWrapper}>
     <div className={styles.container}>
       <SnowEffect />
       <div className={styles.content}>
         <div className={styles.logoArea}>
           <div className={styles.giftBox}>
-            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.giftIcon}>
+            {
+              <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={styles.giftIcon}>
               {/* 리본 상단 */}
               <path d="M60 25C60 25 45 10 30 10C15 10 10 20 10 25C10 30 15 35 30 35H60" fill="#D04848"/>
               <path d="M60 25C60 25 75 10 90 10C105 10 110 20 110 25C110 30 105 35 90 35H60" fill="#B31312"/>
@@ -51,6 +56,7 @@ export default function Main() {
               <circle cx="35" cy="90" r="5" fill="#F3C1C1"/>
               <circle cx="85" cy="90" r="5" fill="#F3C1C1"/>
             </svg>
+            }
           </div>
           <span className={styles.logoText}>마니또</span>
         </div>
@@ -63,5 +69,7 @@ export default function Main() {
         </button>
       </div>
     </div>
-  );
+    <Footer />
+  </div>
+);
 }
