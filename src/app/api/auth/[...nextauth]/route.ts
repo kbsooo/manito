@@ -10,6 +10,7 @@ const handler = NextAuth({
       clientSecret: process.env.KAKAO_CLIENT_SECRET!,
     })
   ],
+  secret: process.env.NEXTAUTH_SECRET,  
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
