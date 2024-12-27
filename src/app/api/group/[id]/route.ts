@@ -83,11 +83,7 @@ export async function DELETE(
     const group = await prisma.group.findUnique({
       where: { id: groupId },
       include: {
-        members: {
-          where: {
-            role: 'CAPTAIN'
-          }
-        }
+        members: true
       }
     });
 
@@ -98,10 +94,10 @@ export async function DELETE(
       );
     }
 
-    // 마니또가 공개되었는지 확인
-    if (!group.isRevealManito) {
+    // 멤버가 1명이거나 마니또가 공개되었을 때만 삭제 가능
+    if (group.members.length > 1 && !group.isRevealManito) {
       return NextResponse.json(
-        { success: false, error: 'Cannot delete group before revealing manito' },
+        { success: false, error: 'Cannot delete group before revealing manito or when members exist' },
         { status: 400 }
       );
     }

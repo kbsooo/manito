@@ -3,8 +3,9 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-// import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
+import SecretManitoModal from '@/app/components/SecretManitoModal';
 
 type Props = {
   params: { id: string };
@@ -38,12 +39,14 @@ interface GroupData {
 
 export default function GroupDetailPage({params}: Props) {
   // const { params } = props;
-  // const router = useRouter();
+  const router = useRouter();
   const { data: session } = useSession();
   const [groupData, setGroupData] = useState<GroupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState<'reveal' | 'assign'>('assign');
 
   const fetchGroupData = useCallback(async () => {
     if (!session?.user?.id) return;
@@ -75,25 +78,41 @@ export default function GroupDetailPage({params}: Props) {
 
   const handleRevealManito = async () => {
     if (!groupData || isProcessing) return;
-
+  
     setIsProcessing(true);
     try {
+      setModalType('reveal');
+      setShowModal(true);
+      
       const { id } = params;
-      const response = await fetch(`/api/group/${id}/reveal`, {
-        method: 'POST',
+      const response = await fetch(`/api/group/${id}/manito`, {
+        method: 'PATCH',
       });
-      const data = await response.json();
-
+  
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to reveal manito');
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || 'Failed to reveal manito');
+        } catch (e) {
+          console.error('Parse error:', e);
+          throw new Error(`Failed to reveal manito: ${errorText}`);
+        }
       }
-
+  
+      const data = await response.json();
+      
       if (data.success) {
-        await fetchGroupData();
+        setTimeout(async () => {
+          await fetchGroupData();
+          setShowModal(false);
+        }, 2000);
       }
     } catch (error) {
       console.error('Reveal error:', error);
       setError(error instanceof Error ? error.message : 'Failed to reveal manito');
+      setShowModal(false);
     } finally {
       setIsProcessing(false);
     }
@@ -116,8 +135,9 @@ export default function GroupDetailPage({params}: Props) {
 
       if (data.success) {
         // 성공 시 다른 페이지로 이동 (예: 그룹 목록 페이지)
-        // router.push('/groups');
         alert('그룹이 삭제되었습니다.');
+        router.push('/main');
+        
       }
     } catch (error) {
       console.error('Delete error:', error);
@@ -144,6 +164,8 @@ export default function GroupDetailPage({params}: Props) {
 
       if (data.success) {
         await fetchGroupData();
+        setModalType('assign');
+        setShowModal(true);
       }
     } catch (error) {
       console.error('Assign error:', error);
@@ -162,6 +184,9 @@ export default function GroupDetailPage({params}: Props) {
   );
   const isCaptain = currentMember?.role === 'CAPTAIN';
   const hasAnyManito = groupData.members.some(member => member.manitoId !== null);
+  const myManito = currentMember?.manitoId 
+    ? groupData.members.find(m => m.userId === currentMember.manitoId)?.name 
+    : null;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -171,25 +196,25 @@ export default function GroupDetailPage({params}: Props) {
 
         {isCaptain && (
           <div className="mb-6 space-x-4">
-            {!groupData.isRevealManito && !hasAnyManito && (
+            {!groupData.isRevealManito && groupData.members.length > 1 && !hasAnyManito && (
               <button
                 onClick={handleAssignManito}
                 disabled={isProcessing}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-400 transition-all duration-200 transform hover:scale-105"
               >
-                {isProcessing ? '처리 중...' : '마니또 뽑기'}
+                {isProcessing ? '처리 중...' : '🎭 마니또 뽑기'}
               </button>
             )}
             {!groupData.isRevealManito && hasAnyManito && (
               <button
                 onClick={handleRevealManito}
                 disabled={isProcessing}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400"
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 transition-all duration-200 transform hover:scale-105"
               >
-                {isProcessing ? '처리 중...' : '마니또 공개'}
+                {isProcessing ? '처리 중...' : '🎉 마니또 공개'}
               </button>
             )}
-            {groupData.isRevealManito && (
+            {(groupData.isRevealManito || groupData.members.length === 1) && (
               <button
                 onClick={handleDeleteGroup}
                 disabled={isProcessing}
@@ -207,16 +232,15 @@ export default function GroupDetailPage({params}: Props) {
             {groupData.members.map((member) => (
               <div
                 key={member.userId}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
               >
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{member.name}</span>
                   {currentMember?.userId === member.userId &&
                     member.manitoId &&
                     !groupData.isRevealManito && (
-                      <span className="text-sm text-blue-600">
-                        마니또:{' '}
-                        {groupData.members.find(m => m.userId === member.manitoId)?.name}
+                      <span className="text-sm text-blue-600 animate-pulse">
+                        🎭 마니또 배정됨
                       </span>
                     )}
                   {groupData.isRevealManito && member.manitoId && (
@@ -232,12 +256,19 @@ export default function GroupDetailPage({params}: Props) {
                       : 'bg-gray-100 text-gray-800'
                   }`}
                 >
-                  {member.role}
+                  {member.role === 'CAPTAIN' ? '👑 ' : ''}{member.role}
                 </span>
               </div>
             ))}
           </div>
         </div>
+
+        <SecretManitoModal 
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          manitoName={myManito || ''}
+          type={modalType}
+        />
       </main>
     </div>
   );
